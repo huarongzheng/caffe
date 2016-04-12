@@ -8,9 +8,9 @@
 CPU_ONLY := 1
 
 # uncomment to disable IO dependencies and corresponding data layers
-# USE_OPENCV := 0
-# USE_LEVELDB := 0
-# USE_LMDB := 0
+USE_OPENCV := 0
+USE_LEVELDB := 0
+USE_LMDB := 0
 
 # uncomment to allow MDB_NOLOCK when reading LMDB files (only if necessary)
 #	You should not set this flag if you will be reading LMDBs with any
@@ -61,8 +61,8 @@ BLAS := atlas
 
 # NOTE: this is required only if you will compile the python interface.
 # We need to be able to find Python.h and numpy/arrayobject.h.
-PYTHON_INCLUDE := /usr/include/python2.7 \
-		/usr/lib/python2.7/dist-packages/numpy/core/include
+PYTHON_INCLUDE := /home/utils/Python-2.7/include/python2.7 \
+		/home/utils/Python-2.7/lib/python2.7/site-packages/numpy/core/include
 # Anaconda Python distribution is quite popular. Include path:
 # Verify anaconda location, sometimes it's in root.
 # ANACONDA_HOME := $(HOME)/anaconda
@@ -87,8 +87,8 @@ PYTHON_LIB := /usr/lib
 # WITH_PYTHON_LAYER := 1
 
 # Whatever else you find you need goes here.
-INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include
-LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib
+INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /home/ronz/tools/gflags/include /home/ronz/tools/glog/include /home/ronz/tools/hd5/include /home/ronz/tools/atlas-3.10.2/include /home/ronz/tools/protobuf-2.5.0/include /home/utils/boost-1.60.0/include
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /home/ronz/tools/gflags/lib /home/ronz/tools/glog/lib /home/ronz/tools/hd5/lib /home/ronz/tools/atlas-3.10.2/lib /home/ronz/tools/protobuf-2.5.0/lib /home/utils/boost-1.60.0/lib 
 
 # If Homebrew is installed at a non standard location (for example your home directory) and you use it for general dependencies
 # INCLUDE_DIRS += $(shell brew --prefix)/include
