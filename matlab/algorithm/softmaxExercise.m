@@ -17,7 +17,7 @@
 %  to be used more generally on any arbitrary input. 
 %  We also initialise some parameters used for tuning the model.
 %display(sprintf('Program START time:  %s\r',datestr(now)));
-clear all; close all;
+clc; clear all; close all;
 
 inputSize = 28 * 28; % Size of input vector (MNIST images are 28x28)
 numClasses = 10;     % Number of classes (MNIST images fall into 10 classes)
@@ -115,6 +115,7 @@ options.useMex = false;
 options.Display = 'off'; % Level [ off | final | (iter) | full | excessive ]
 softmaxModel = softmaxTrain(inputSize, numClasses, lambda, ...
                             inputData, labels, options);
+display_network(softmaxModel.optTheta'); 
 
 % Although we only use 100 iterations here to train a classifier for the 
 % MNIST data set, in practice, training for more iterations is usually
