@@ -1,6 +1,6 @@
 Fast model of various ML algorithm
 ---
-Refer to UFLDL (http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial) for more details.
+Refer to [UFLDL](http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial) for more details.
 
 # Softmax
     softmaxExercise.m
