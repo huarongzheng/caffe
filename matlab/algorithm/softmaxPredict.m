@@ -14,13 +14,8 @@ pred = zeros(1, size(data, 2));
 %% ---------- YOUR CODE HERE --------------------------------------
 %  Instructions: Compute pred using theta assuming that the labels start 
 %                from 1.
-
-
-
-
-
-
-
+p = softmaxHypothesis(theta,data);
+[maxProb, pred] = max(p, [], 1);
 
 % ---------------------------------------------------------------------
 

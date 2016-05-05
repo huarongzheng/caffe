@@ -23,17 +23,19 @@ thetagrad = zeros(numClasses, inputSize);
 %                You need to compute thetagrad and cost.
 %                The groundTruth matrix might come in handy.
 
-p = exp(theta*data);
-% max: alone dim 1 results in 1*60000; each of the 10 component in 10*60000 
-% hypothesis column subtract by 1 max 
-p = bsxfun(@minus, p, max(hypothesis, [], 1));
-% sum: 1*60000, hypothesis:10*60000
-p = bsxfun(@rdivide, p, sum(p, 1));
+%p = theta*data;
+%% max: alone dim 1 results in 1*60000; each of the 10 component in 10*60000 
+%% hypothesis column subtract by 1 max 
+%p = bsxfun(@minus, p, max(p, [], 1));
+%p = exp(p);
+%% sum: 1*60000, hypothesis:10*60000
+%p = bsxfun(@rdivide, p, sum(p, 1));
+p = softmaxHypothesis(theta,data);
 logHypothesis = log(p);
 
-cost = (-1/numCases)*sum(sum(groundTruth.*logHypothesis,1));
+cost = (-1/numCases)*sum(sum(groundTruth.*logHypothesis,1)) + (lambda/2)*sum(sum(theta.*theta));
 
-thetagrad = bsxfun(@times, p, sum((groundTruth - groundTruth.*p),1));
+thetagrad = (-1/numCases)*(groundTruth - p)*(data') + lambda*theta;
 
 
 
@@ -41,4 +43,3 @@ thetagrad = bsxfun(@times, p, sum((groundTruth - groundTruth.*p),1));
 % Unroll the gradient matrices into a vector for minFunc
 grad = [thetagrad(:)];
 end
-

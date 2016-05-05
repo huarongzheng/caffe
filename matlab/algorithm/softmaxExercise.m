@@ -16,12 +16,15 @@
 %  Here we define and initialise some constants which allow your code
 %  to be used more generally on any arbitrary input. 
 %  We also initialise some parameters used for tuning the model.
+%display(sprintf('Program START time:  %s\r',datestr(now)));
+clear all; close all;
 
 inputSize = 28 * 28; % Size of input vector (MNIST images are 28x28)
 numClasses = 10;     % Number of classes (MNIST images fall into 10 classes)
 
 lambda = 1e-4; % Weight decay parameter
 
+trainSampleNum = 60000;
 %%======================================================================
 %% STEP 1: Load data
 %
@@ -39,15 +42,25 @@ inputData = loadMNISTImages('.\mnist\train-images.idx3-ubyte');
 labels = loadMNISTLabels('.\mnist\train-labels.idx1-ubyte');
 labels(labels==0) = 10; % Remap 0 to 10
 
+if (trainSampleNum < size(inputData,2))
+    inputData = inputData(:,1:trainSampleNum);
+    labels = labels(1:trainSampleNum);
+end
+
+
 % For debugging purposes, you may wish to reduce the size of the input data
 % in order to speed up gradient checking. 
 % Here, we create synthetic dataset using random data for testing
 
-DEBUG = true; % Set DEBUG to true when debugging.
+DEBUG = false; % Set DEBUG to true when debugging.
 if DEBUG
-    inputSize = 8;
-    inputData = randn(8, 100);
-    labels = randi(10, 100, 1);
+%    inputSize = 8;
+%    inputData = randn(inputSize, trainSampleNum);
+%    labels = randi(numClasses, trainSampleNum, 1);
+    
+    % We are using display_network from the autoencoder code
+    display_network(inputData(:,1:trainSampleNum)); % Show the first 100 images
+    %disp(labels(1:trainSampleNum));
 end
 
 % Randomly initialise theta
@@ -72,11 +85,12 @@ if DEBUG
                                     inputSize, lambda, inputData, labels), theta);
 
     % Use this to visually compare the gradients side by side
-    disp([numGrad grad]); 
-
+    % disp([numGrad grad]); 
+    figure; plot(numGrad-grad);
+    
     % Compare numerically computed gradients with those computed analytically
     diff = norm(numGrad-grad)/norm(numGrad+grad);
-    disp(diff); 
+    display(sprintf('norm diff = %e\r',diff)); %disp(diff); 
     % The difference should be small. 
     % In our implementation, these values are usually less than 1e-7.
 
@@ -90,10 +104,18 @@ end
 %  you can start training your softmax regression code using softmaxTrain
 %  (which uses minFunc).
 
+% refer to comment in ./minFunc/minFunc.m
+options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
+                          % function. Generally, for minFunc to work, you
+                          % need a function pointer with two outputs: the
+                          % function value and the gradient. In our problem,
+                          % softmaxCost.m satisfies this.
 options.maxIter = 100;
+options.useMex = false;
+options.Display = 'off'; % Level [ off | final | (iter) | full | excessive ]
 softmaxModel = softmaxTrain(inputSize, numClasses, lambda, ...
                             inputData, labels, options);
-                          
+
 % Although we only use 100 iterations here to train a classifier for the 
 % MNIST data set, in practice, training for more iterations is usually
 % beneficial.
@@ -106,8 +128,8 @@ softmaxModel = softmaxTrain(inputSize, numClasses, lambda, ...
 %  (in softmaxPredict.m), which should return predictions
 %  given a softmax model and the input data.
 
-inputData = loadMNISTImages('mnist/t10k-images-idx3-ubyte');
-labels = loadMNISTLabels('mnist/t10k-labels-idx1-ubyte');
+inputData = loadMNISTImages('.\mnist\t10k-images.idx3-ubyte');
+labels = loadMNISTLabels('.\mnist\t10k-labels.idx1-ubyte');
 labels(labels==0) = 10; % Remap 0 to 10
 
 
@@ -116,7 +138,7 @@ labels(labels==0) = 10; % Remap 0 to 10
 
 acc = mean(labels(:) == pred(:));
 fprintf('Accuracy: %0.3f%%\n', acc * 100);
-
+%display(sprintf('Program END time:  %s\r',datestr(now)));
 % Accuracy is the proportion of correctly classified images
 % After 100 iterations, the results for our implementation were:
 %
