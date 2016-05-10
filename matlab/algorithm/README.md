@@ -2,10 +2,6 @@ Fast model of various ML algorithm
 ---
 Refer to [UFLDL](http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial) for more details.
 
-# Softmax
-    softmaxExercise.m
-    softmax*.m
-
 # Autoencoder
     train.m
     initializeParameters.m
@@ -15,6 +11,18 @@ Refer to [UFLDL](http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial)
 # STL (Self-Taught Learning)
     stlExercise.m
     feedForwardAutoencoder.m
+
+# Softmax
+    softmaxExercise.m
+    softmax*.m
+
+# Deep Network
+    checkStackedAECost.m
+    params2stack.m
+    stack2params.m
+    stackedAECost.m
+    stackedAEExercise.m
+    stackedAEPredict.m
 
 # Common
     display_network.m
