@@ -8,11 +8,13 @@ Refer to [UFLDL](http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial)
 
 # Autoencoder
     train.m
+    initializeParameters.m
     sparseAutoencoderCost.m
     sampleIMAGES.m
 
-# CNN
-    initializeParameters.m
+# STL (Self-Taught Learning)
+    stlExercise.m
+    feedForwardAutoencoder.m
 
 # Common
     display_network.m
