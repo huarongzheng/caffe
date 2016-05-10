@@ -16,8 +16,8 @@ numgrad = computeNumericalGradient(@simpleQuadraticFunction, x);
 
 % Visually examine the two gradient computations.  The two columns
 % you get should be very similar. 
-disp([numgrad grad]);
-fprintf('The above two columns you get should be very similar.\n(Left-Your Numerical Gradient, Right-Analytical Gradient)\n\n');
+%disp([numgrad grad]);
+%fprintf('The above two columns you get should be very similar.\n(Left-Your Numerical Gradient, Right-Analytical Gradient)\n\n');
 
 % Evaluate the norm of the difference between two solutions.  
 % If you have a correct implementation, and assuming you used EPSILON = 0.0001 
