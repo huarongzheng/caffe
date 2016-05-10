@@ -74,7 +74,7 @@ cost = (1/numCases)*sum(sum(  0.5*(error.^2)   ,1)) + (lambda/2)*sum(sum(theta.*
 
 %backpropagation
 delta3 = error.*a3.*(1-a3);
-delta2 = (W2'*delta3 + beta*klDivergenceDev).*a2.*(1-a2);
+delta2 = (W2'*delta3 + beta*repmat(klDivergenceDev,1,size(delta3,2))).*a2.*(1-a2);
 delta1 = W1'*delta2.*a1.*(1-a1);
 
 W2grad = (1/numCases)*delta3*a2' + lambda*W2;

@@ -24,7 +24,7 @@ numClasses = 10;     % Number of classes (MNIST images fall into 10 classes)
 
 lambda = 1e-4; % Weight decay parameter
 
-trainSampleNum = 60000;
+numpatches = inf;
 %%======================================================================
 %% STEP 1: Load data
 %
@@ -38,14 +38,12 @@ trainSampleNum = 60000;
 % On some platforms, the files might be saved as 
 % train-images.idx3-ubyte / train-labels.idx1-ubyte
 
-inputData = loadMNISTImages('.\mnist\train-images.idx3-ubyte');
-labels = loadMNISTLabels('.\mnist\train-labels.idx1-ubyte');
+inputData = loadMNISTImages('.\mnist\train-images.idx3-ubyte',numpatches);
+labels = loadMNISTLabels('.\mnist\train-labels.idx1-ubyte',numpatches);
 labels(labels==0) = 10; % Remap 0 to 10
 
-if (trainSampleNum < size(inputData,2))
-    inputData = inputData(:,1:trainSampleNum);
-    labels = labels(1:trainSampleNum);
-end
+numpatches = size(inputData,2);
+assert(size(labels,1) == numpatches, 'Mismatch in label count');
 
 
 % For debugging purposes, you may wish to reduce the size of the input data
@@ -54,13 +52,14 @@ end
 
 DEBUG = false; % Set DEBUG to true when debugging.
 if DEBUG
+    assert(numpatches>1000, 'too many images to show for debug, try numpatches < 1000');
 %    inputSize = 8;
-%    inputData = randn(inputSize, trainSampleNum);
-%    labels = randi(numClasses, trainSampleNum, 1);
+%    inputData = randn(inputSize, numpatches);
+%    labels = randi(numClasses, numpatches, 1);
     
     % We are using display_network from the autoencoder code
-    display_network(inputData(:,1:trainSampleNum)); % Show the first 100 images
-    %disp(labels(1:trainSampleNum));
+    display_network(inputData(:,1:numpatches)); % Show the first 100 images
+    %disp(labels(1:numpatches));
 end
 
 % Randomly initialise theta
@@ -129,8 +128,8 @@ display_network(softmaxModel.optTheta');
 %  (in softmaxPredict.m), which should return predictions
 %  given a softmax model and the input data.
 
-inputData = loadMNISTImages('.\mnist\t10k-images.idx3-ubyte');
-labels = loadMNISTLabels('.\mnist\t10k-labels.idx1-ubyte');
+inputData = loadMNISTImages('.\mnist\t10k-images.idx3-ubyte',inf);
+labels = loadMNISTLabels('.\mnist\t10k-labels.idx1-ubyte',inf);
 labels(labels==0) = 10; % Remap 0 to 10
 
 
@@ -139,6 +138,7 @@ labels(labels==0) = 10; % Remap 0 to 10
 
 acc = mean(labels(:) == pred(:));
 fprintf('Accuracy: %0.3f%%\n', acc * 100);
+assert(acc * 100>92.2, 'accuracy > 92.200%, normally it goes up to 92.6%');
 %display(sprintf('Program END time:  %s\r',datestr(now)));
 % Accuracy is the proportion of correctly classified images
 % After 100 iterations, the results for our implementation were:

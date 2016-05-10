@@ -14,26 +14,38 @@
 %  allow your sparse autoencoder to get good filters; you do not need to 
 %  change the parameters below.
 clear all; close all; clc;
+warning("off", "all");
+DEBUG = true;
+trainDatabase = "MNIST"; %MNIST or sampleIMAGES
 
-patchsize = 8;  % we'll use 8x8 patches 
-numpatches = 10000;
+if (strcmp(trainDatabase,"MNIST"))
+    patchsize = 28;
+    hiddenSize = 196;
+    sparsityParam = 0.1;
+    lambda = 0.003; 
+else
+    patchsize = 8;       % we'll use 8x8 patches 
+    hiddenSize = 25;     % number of hidden units 
+    sparsityParam = 0.01;% desired average activation of the hidden units.
+                         % (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
+		                     %  in the lecture notes). 
+    lambda = 0.0001;     % weight decay parameter       
+end
+numpatches = 64;
 visibleSize = patchsize*patchsize;   % number of input units 
-hiddenSize = 25;     % number of hidden units 
-sparsityParam = 0.01;   % desired average activation of the hidden units.
-                     % (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
-		     %  in the lecture notes). 
-lambda = 0.0001;     % weight decay parameter       
-beta = 3;            % weight of sparsity penalty term       
-DEBUG = false;
+beta = 3;            % weight of sparsity penalty term
 %%======================================================================
 %% STEP 1: Implement sampleIMAGES
 %
 %  After implementing sampleIMAGES, the display_network command should
 %  display a random sample of 400 patches from the dataset
-
-patches = sampleIMAGES(patchsize, numpatches);
-display_network(patches(:,1:400));
-
+if (strcmp(trainDatabase,"MNIST"))
+    patches = loadMNISTImages('.\mnist\train-images.idx3-ubyte', 400);
+    patches = patches(:,1:numpatches);
+else
+    patches = sampleIMAGES(patchsize, numpatches);
+end
+display_network(patches(:,1:64));
 
 %  Obtain random parameters theta
 theta = initializeParameters(hiddenSize, visibleSize);
@@ -96,14 +108,14 @@ figure; plot(numGrad-grad);
 % usually less than 1e-9.
 % When you got this working, Congratulations!!! 
 diff = norm(numGrad-grad)/norm(numGrad+grad);
-display(sprintf('norm diff = %e\r',diff)); %disp(diff); 
+fsprintf('norm diff = %e\n',diff); %disp(diff); 
 end
 %%======================================================================
 %% STEP 4: After verifying that your implementation of
 %  sparseAutoencoderCost is correct, You can start training your sparse
 %  autoencoder with minFunc (L-BFGS).
 
-%  Randomly initialize the parameters
+%  Randomly initialize the parameters. theta was initialized before, but tampered in numerical gradient check
 theta = initializeParameters(hiddenSize, visibleSize);
 
 %  Use minFunc to minimize the function
@@ -113,7 +125,7 @@ options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
                           % need a function pointer with two outputs: the
                           % function value and the gradient. In our problem,
                           % sparseAutoencoderCost.m satisfies this.
-options.maxIter = 400;	  % Maximum number of iterations of L-BFGS to run 
+options.maxIter = 76;	  % Maximum number of iterations of L-BFGS to run 
 options.useMex = false;
 options.display = 'on';
 

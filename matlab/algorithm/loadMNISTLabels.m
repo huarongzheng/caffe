@@ -1,4 +1,4 @@
-function labels = loadMNISTLabels(filename)
+function labels = loadMNISTLabels(filename, num)
 %loadMNISTLabels returns a [number of MNIST images]x1 matrix containing
 %the labels for the MNIST images
 
@@ -10,7 +10,12 @@ assert(magic == 2049, ['Bad magic number in ', filename, '']);
 
 numLabels = fread(fp, 1, 'int32', 0, 'ieee-be');
 
-labels = fread(fp, inf, 'unsigned char');
+if (num~=inf)
+    assert(num>0, 'must read positive num');
+    numLabels = num;
+end
+
+labels = fread(fp, num, 'unsigned char');
 
 assert(size(labels,1) == numLabels, 'Mismatch in label count');
 

@@ -24,7 +24,8 @@ numgrad = computeNumericalGradient(@simpleQuadraticFunction, x);
 % in computeNumericalGradient.m, then diff below should be 2.1452e-12 
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 disp(diff); 
-fprintf('Norm of the difference between numerical and analytical gradient (should be < 1e-9)\n\n');
+%fprintf('Norm of the difference between numerical and analytical gradient (should be < 1e-9)\n\n');
+assert(diff<1e-9, 'Norm of the difference between numerical and analytical gradient (should be < 1e-9)\n\n');
 end
 
 

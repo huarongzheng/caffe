@@ -20,7 +20,10 @@ numgrad = zeros(size(theta));
 
 epsilon = 10e-4;
 
-for pos = 1:size(theta)
+thetaDim = size(theta,1);
+for pos = 1:thetaDim
+    fprintf('theta element %f%%\n', 100*(pos/thetaDim));
+    fflush(stdout);
     thetaTemp = theta;
     thetaTemp(pos) = thetaTemp(pos) + epsilon;
     JPlus = J(thetaTemp);
