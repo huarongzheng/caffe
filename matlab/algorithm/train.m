@@ -21,14 +21,14 @@ if (strcmp(trainDatabase,'MNIST'))
     patchsize = 28;
     hiddenSize = 196;
     sparsityParam = 0.1;
-    lambda = 0.003; 
+    lambda = 3e-3; 
 else
     patchsize = 8;       % we'll use 8x8 patches 
     hiddenSize = 25;     % number of hidden units 
     sparsityParam = 0.01;% desired average activation of the hidden units.
                          % (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
 		                     %  in the lecture notes). 
-    lambda = 0.0001;     % weight decay parameter       
+    lambda = 1e-4;     % weight decay parameter       
 end
 numpatches = 10000;
 visibleSize = patchsize*patchsize;   % number of input units 
@@ -133,12 +133,10 @@ options.display = 'on';
                                    lambda, sparsityParam, ...
                                    beta, patches), ...
                               theta, options);
-
 %%======================================================================
 %% STEP 5: Visualization 
-
 W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
 %display_network(W1'); 
 %print -djpeg weights.jpg   % save the visualization to a file 
-%save -v7 mnist_autoencoder_W1.mat W1;
+%save -v7 mnist_autoencoder_opttheta.mat opttheta;
 
