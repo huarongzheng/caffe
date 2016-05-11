@@ -39,7 +39,7 @@ beta = 3;            % weight of sparsity penalty term
 %  After implementing sampleIMAGES, the display_network command should
 %  display a random sample of 400 patches from the dataset
 if (strcmp(trainDatabase,'MNIST'))
-    patches = loadMNISTImages('.\mnist\train-images.idx3-ubyte', numpatches);
+    patches = loadMNISTImages('./mnist/train-images-idx3-ubyte', numpatches);
 else
     patches = sampleIMAGES(patchsize, numpatches);
 end
@@ -106,7 +106,7 @@ figure; plot(numGrad-grad);
 % usually less than 1e-9.
 % When you got this working, Congratulations!!! 
 diff = norm(numGrad-grad)/norm(numGrad+grad);
-fsprintf('norm diff = %e\n',diff); %disp(diff); 
+fprintf('norm diff = %e\n',diff); %disp(diff); 
 end
 %%======================================================================
 %% STEP 4: After verifying that your implementation of
@@ -119,6 +119,7 @@ theta = initializeParameters(hiddenSize, visibleSize);
 %  Use minFunc to minimize the function
 addpath minFunc/
 options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
+                          % csd 100 iter also work for limited memory budget
                           % function. Generally, for minFunc to work, you
                           % need a function pointer with two outputs: the
                           % function value and the gradient. In our problem,

@@ -38,8 +38,8 @@ numpatches = inf;
 % On some platforms, the files might be saved as 
 % train-images.idx3-ubyte / train-labels.idx1-ubyte
 
-inputData = loadMNISTImages('.\mnist\train-images.idx3-ubyte',numpatches);
-labels = loadMNISTLabels('.\mnist\train-labels.idx1-ubyte',numpatches);
+inputData = loadMNISTImages('./mnist/train-images-idx3-ubyte',numpatches);
+labels = loadMNISTLabels('./mnist/train-labels-idx1-ubyte',numpatches);
 labels(labels==0) = 10; % Remap 0 to 10
 
 numpatches = size(inputData,2);
@@ -128,8 +128,8 @@ display_network(softmaxModel.optTheta');
 %  (in softmaxPredict.m), which should return predictions
 %  given a softmax model and the input data.
 
-inputData = loadMNISTImages('.\mnist\t10k-images.idx3-ubyte',inf);
-labels = loadMNISTLabels('.\mnist\t10k-labels.idx1-ubyte',inf);
+inputData = loadMNISTImages('./mnist/t10k-images-idx3-ubyte',inf);
+labels = loadMNISTLabels('./mnist/t10k-labels-idx1-ubyte',inf);
 labels(labels==0) = 10; % Remap 0 to 10
 
 

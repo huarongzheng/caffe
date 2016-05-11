@@ -88,7 +88,7 @@ b1grad = (1/numCases)*sum(delta2,2) + lambda*b1;
 % your gradient matrices into a vector.
 
 grad = [W1grad(:); W2grad(:); b1grad(:); b2grad(:)];
-
+fflush(stdout); % flush all previous msg out especially per iter info in minFunc
 end
 
 %-------------------------------------------------------------------
