@@ -14,11 +14,10 @@
 %  allow your sparse autoencoder to get good filters; you do not need to 
 %  change the parameters below.
 clear all; close all; clc;
-warning("off", "all");
-DEBUG = true;
-trainDatabase = "MNIST"; %MNIST or sampleIMAGES
+DEBUG = false;
+trainDatabase = 'MNIST'; %MNIST or sampleIMAGES
 
-if (strcmp(trainDatabase,"MNIST"))
+if (strcmp(trainDatabase,'MNIST'))
     patchsize = 28;
     hiddenSize = 196;
     sparsityParam = 0.1;
@@ -31,7 +30,7 @@ else
 		                     %  in the lecture notes). 
     lambda = 0.0001;     % weight decay parameter       
 end
-numpatches = 64;
+numpatches = 10000;
 visibleSize = patchsize*patchsize;   % number of input units 
 beta = 3;            % weight of sparsity penalty term
 %%======================================================================
@@ -39,9 +38,8 @@ beta = 3;            % weight of sparsity penalty term
 %
 %  After implementing sampleIMAGES, the display_network command should
 %  display a random sample of 400 patches from the dataset
-if (strcmp(trainDatabase,"MNIST"))
-    patches = loadMNISTImages('.\mnist\train-images.idx3-ubyte', 400);
-    patches = patches(:,1:numpatches);
+if (strcmp(trainDatabase,'MNIST'))
+    patches = loadMNISTImages('.\mnist\train-images.idx3-ubyte', numpatches);
 else
     patches = sampleIMAGES(patchsize, numpatches);
 end
@@ -125,7 +123,7 @@ options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
                           % need a function pointer with two outputs: the
                           % function value and the gradient. In our problem,
                           % sparseAutoencoderCost.m satisfies this.
-options.maxIter = 76;	  % Maximum number of iterations of L-BFGS to run 
+options.maxIter = 400;	  % Maximum number of iterations of L-BFGS to run 
 options.useMex = false;
 options.display = 'on';
 
@@ -141,6 +139,6 @@ options.display = 'on';
 W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
 display_network(W1'); 
 
-print -djpeg weights.jpg   % save the visualization to a file 
+%print -djpeg weights.jpg   % save the visualization to a file 
 
 
