@@ -43,7 +43,7 @@ if (strcmp(trainDatabase,'MNIST'))
 else
     patches = sampleIMAGES(patchsize, numpatches);
 end
-display_network(patches(:,1:64));
+%display_network(patches(:,1:64));
 
 %  Obtain random parameters theta
 theta = initializeParameters(hiddenSize, visibleSize);
@@ -138,8 +138,7 @@ options.display = 'on';
 %% STEP 5: Visualization 
 
 W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
-display_network(W1'); 
-
+%display_network(W1'); 
 %print -djpeg weights.jpg   % save the visualization to a file 
-
+%save -v7 mnist_autoencoder_W1.mat W1;
 
