@@ -1,5 +1,5 @@
 function [cost,grad] = sparseAutoencoderCost(theta, visibleSize, hiddenSize, ...
-                                             lambda, sparsityParam, beta, a1)
+                                             lambda, sparsityParam, beta, a1, isLinear)
 
 % visibleSize: the number of input units (probably 64) 
 % hiddenSize: the number of hidden units (probably 25) 
@@ -12,6 +12,9 @@ function [cost,grad] = sparseAutoencoderCost(theta, visibleSize, hiddenSize, ...
 % The input theta is a vector (because minFunc expects the parameters to be a vector). 
 % We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this 
 % follows the notation convention of the lecture notes. 
+if ~exist('isLinear', 'var') || isempty(isLinear)
+    isLinear = false;
+end
 
 W1 = reshape(theta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
 W2 = reshape(theta(hiddenSize*visibleSize+1:2*hiddenSize*visibleSize), visibleSize, hiddenSize);
@@ -58,7 +61,12 @@ for layer = 2:3
   end
 
   z = W*a + repmat(b,1,size(a,2));
-  a = sigmoid(z);
+
+  if (layer==3 && isLinear==true)
+      a = z;
+  else
+      a = sigmoid(z);
+  end
   
   if (layer == 2)
       a2=a;
@@ -73,7 +81,11 @@ error = a3 - a1; %a3==a
 cost = (1/numCases)*sum(sum(  0.5*(error.^2)   ,1)) + (lambda/2)*sum(sum(theta.*theta)) + beta*sum(klDivergence);
 
 %backpropagation
-delta3 = error.*a3.*(1-a3);
+if (isLinear==true)
+    delta3 = error;
+else
+    delta3 = error.*a3.*(1-a3);
+end
 delta2 = (W2'*delta3 + beta*repmat(klDivergenceDev,1,size(delta3,2))).*a2.*(1-a2);
 delta1 = W1'*delta2.*a1.*(1-a1);
 
