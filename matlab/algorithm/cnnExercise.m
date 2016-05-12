@@ -11,7 +11,7 @@
 %%======================================================================
 %% STEP 0: Initialization
 %  Here we initialize some parameters used for the exercise.
-
+clear all; close all; clc;
 imageDim = 64;         % image dimension
 imageChannels = 3;     % number of channels (rgb, so 3)
 
@@ -38,10 +38,10 @@ poolDim = 19;          % dimension of pooling region
 % Train the sparse autoencoder and fill the following variables with 
 % the optimal parameters:
 
-optTheta =  zeros(2*hiddenSize*visibleSize+hiddenSize+visibleSize, 1);
-ZCAWhite =  zeros(visibleSize, visibleSize);
-meanPatch = zeros(visibleSize, 1);
-
+% optTheta =  zeros(2*hiddenSize*visibleSize+hiddenSize+visibleSize, 1);
+% ZCAWhite =  zeros(visibleSize, visibleSize);
+% meanPatch = zeros(visibleSize, 1);
+load STL10Features.mat;
 
 % --------------------------------------------------------------------
 
