@@ -11,7 +11,7 @@
 %%======================================================================
 %% STEP 0: Initialization
 %  Here we initialize some parameters used for the exercise.
-
+clear all; close all; clc;
 imageChannels = 3;     % number of channels (rgb, so 3)
 
 patchDim   = 8;          % patch dimension
@@ -45,16 +45,17 @@ epsilon = 0.1;	       % epsilon for ZCA whitening
 debugHiddenSize = 5;
 debugvisibleSize = 8;
 patches = rand([8 10]);
+isLinear = true;
 theta = initializeParameters(debugHiddenSize, debugvisibleSize); 
 
-[cost, grad] = sparseAutoencoderLinearCost(theta, debugvisibleSize, debugHiddenSize, ...
+[cost, grad] = sparseAutoencoderCost(theta, debugvisibleSize, debugHiddenSize, ...
                                            lambda, sparsityParam, beta, ...
-                                           patches);
+                                           patches, isLinear);
 
 % Check gradients
-numGrad = computeNumericalGradient( @(x) sparseAutoencoderLinearCost(x, debugvisibleSize, debugHiddenSize, ...
+numGrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, debugvisibleSize, debugHiddenSize, ...
                                                   lambda, sparsityParam, beta, ...
-                                                  patches), theta);
+                                                  patches, isLinear), theta);
 
 % Use this to visually compare the gradients side by side
 disp([numGrad grad]); 
@@ -63,7 +64,7 @@ diff = norm(numGrad-grad)/norm(numGrad+grad);
 % Should be small. In our implementation, these values are usually less than 1e-9.
 disp(diff); 
 
-assert(diff < 1e-9, 'Difference too large. Check your gradient computation again');
+assert(diff < 1e-7, 'Difference too large. Check your gradient computation again');
 
 % NOTE: Once your gradients check out, you should run step 0 again to
 %       reinitialize the parameters
@@ -119,10 +120,10 @@ options.Method = 'lbfgs';
 options.maxIter = 400;
 options.display = 'on';
 
-[optTheta, cost] = minFunc( @(p) sparseAutoencoderLinearCost(p, ...
+[optTheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
                                    visibleSize, hiddenSize, ...
                                    lambda, sparsityParam, ...
-                                   beta, patches), ...
+                                   beta, patches, isLinear), ...
                               theta, options);
 
 % Save the learned features and the preprocessing matrices for use in 
