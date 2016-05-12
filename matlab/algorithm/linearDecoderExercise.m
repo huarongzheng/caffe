@@ -62,7 +62,7 @@ disp([numGrad grad]);
 
 diff = norm(numGrad-grad)/norm(numGrad+grad);
 % Should be small. In our implementation, these values are usually less than 1e-9.
-disp(diff); 
+%disp(diff); 
 
 assert(diff < 1e-7, 'Difference too large. Check your gradient computation again');
 
@@ -82,7 +82,7 @@ assert(diff < 1e-7, 'Difference too large. Check your gradient computation again
 
 load stlSampledPatches.mat
 
-displayColorNetwork(patches(:, 1:100));
+%displayColorNetwork(patches(:, 1:100));
 
 %% STEP 2b: Apply preprocessing
 %  In this sub-step, we preprocess the sampled patches, in particular, 
@@ -104,7 +104,7 @@ sigma = patches * patches' / numPatches;
 ZCAWhite = u * diag(1 ./ sqrt(diag(s) + epsilon)) * u';
 patches = ZCAWhite * patches;
 
-displayColorNetwork(patches(:, 1:100));
+%figure; displayColorNetwork(patches(:, 1:100));
 
 %% STEP 2c: Learn features
 %  You will now use your sparse autoencoder (with linear decoder) to learn
@@ -118,6 +118,7 @@ addpath minFunc/
 options = struct;
 options.Method = 'lbfgs'; 
 options.maxIter = 400;
+options.useMex = false;
 options.display = 'on';
 
 [optTheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
@@ -133,7 +134,10 @@ save('STL10Features.mat', 'optTheta', 'ZCAWhite', 'meanPatch');
 fprintf('Saved\n');
 
 %% STEP 2d: Visualize learned features
-
+% W is layer 1 encoder parameter. W*ZCAWhite are the over all coeff applied to
+% original patches, that is layer2 z = W*ZCAWhite * patches.
+% thus W*ZCAWhite are the actual learned features. Transposition is necessary as
+% all autoencoder cases, for visualization (train.m)
 W = reshape(optTheta(1:visibleSize * hiddenSize), hiddenSize, visibleSize);
 b = optTheta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
-displayColorNetwork( (W*ZCAWhite)');
+%figure; displayColorNetwork( (W*ZCAWhite)');
