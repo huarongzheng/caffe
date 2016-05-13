@@ -49,7 +49,7 @@ load STL10Features.mat;
 W = reshape(optTheta(1:visibleSize * hiddenSize), hiddenSize, visibleSize);
 b = optTheta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
 
-displayColorNetwork( (W*ZCAWhite)');
+% displayColorNetwork( (W*ZCAWhite)');
 
 %%======================================================================
 %% STEP 2: Implement and test convolution and pooling

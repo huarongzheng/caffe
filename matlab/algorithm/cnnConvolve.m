@@ -40,11 +40,8 @@ convolvedFeatures = zeros(numFeatures, numImages, imageDim - patchDim + 1, image
 % that you need to take into account the whitening and mean subtraction
 % steps
 
-
-
-
-
-
+WWhite = W * ZCAWhite;
+biasAll = b - WWhite*meanPatch;
 % --------------------------------------------------------
 
 convolvedFeatures = zeros(numFeatures, numImages, imageDim - patchDim + 1, imageDim - patchDim + 1);
@@ -53,15 +50,14 @@ for imageNum = 1:numImages
 
     % convolution of image with feature matrix for each channel
     convolvedImage = zeros(imageDim - patchDim + 1, imageDim - patchDim + 1);
-    for channel = 1:3
+    
+    feature3Ch = reshape(WWhite(featureNum,:),patchDim,patchDim,imageChannels);
+    for channel = 1:imageChannels % 1:3
 
       % Obtain the feature (patchDim x patchDim) needed during the convolution
       % ---- YOUR CODE HERE ----
-      feature = zeros(8,8); % You should replace this
-      
-      
-      
-      
+      %feature = zeros(8,8); % You should replace this
+      feature = feature3Ch(:,:,channel); % You should replace this
       % ------------------------
 
       % Flip the feature matrix because of the definition of convolution, as explained later
@@ -73,20 +69,16 @@ for imageNum = 1:numImages
       % Convolve "feature" with "im", adding the result to convolvedImage
       % be sure to do a 'valid' convolution
       % ---- YOUR CODE HERE ----
-
-      
-      
-      
+      convolvedImage = convolvedImage + conv2(im,feature,'valid');
       % ------------------------
-
     end
     
     % Subtract the bias unit (correcting for the mean subtraction as well)
     % Then, apply the sigmoid function to get the hidden activation
     % ---- YOUR CODE HERE ----
 
-    
-    
+    convolvedImage = convolvedImage + ones(size(convolvedImage))*biasAll(featureNum);
+    convolvedImage = sigmoid(convolvedImage);
     
     % ------------------------
     
