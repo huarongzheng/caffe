@@ -23,7 +23,7 @@ epsilon = 10e-4;
 thetaDim = size(theta,1);
 for pos = 1:thetaDim
     fprintf('computeNumericalGradient: theta element %f%%\n', 100*(pos/thetaDim));
-    fflush(stdout);
+    refreshScreen();
     thetaTemp = theta;
     thetaTemp(pos) = thetaTemp(pos) + epsilon;
     JPlus = J(thetaTemp);

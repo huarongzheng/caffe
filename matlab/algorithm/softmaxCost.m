@@ -37,7 +37,7 @@ cost = (-1/numCases)*sum(sum(groundTruth.*logHypothesis,1)) + (lambda/2)*sum(sum
 
 thetagrad = (-1/numCases)*(groundTruth - p)*(data') + lambda*theta;
 
-% fflush(stdout); % flush all previous msg out especially per iter info in minFunc
+refreshScreen(); % flush all previous msg out especially per iter info in minFunc
 
 % ------------------------------------------------------------------
 % Unroll the gradient matrices into a vector for minFunc

@@ -147,8 +147,8 @@ end
 stepSize = 50;
 assert(mod(hiddenSize, stepSize) == 0, 'stepSize should divide hiddenSize');
 
-load stlTrainSubset.mat % loads numTrainImages, trainImages, trainLabels
-load stlTestSubset.mat  % loads numTestImages,  testImages,  testLabels
+load stlTrainSubset.mat % loads numTrainImages, trainImages, trainLabels  64x64x3x2000
+load stlTestSubset.mat  % loads numTestImages,  testImages,  testLabels  64x64x3x3200
 
 pooledFeaturesTrain = zeros(hiddenSize, numTrainImages, ...
     floor((imageDim - patchDim + 1) / poolDim), ...
@@ -160,7 +160,7 @@ pooledFeaturesTest = zeros(hiddenSize, numTestImages, ...
 tic();
 
 for convPart = 1:(hiddenSize / stepSize)
-    
+    refreshScreen();
     featureStart = (convPart - 1) * stepSize + 1;
     featureEnd = convPart * stepSize;
     
@@ -169,6 +169,8 @@ for convPart = 1:(hiddenSize / stepSize)
     bt = b(featureStart:featureEnd);    
     
     fprintf('Convolving and pooling train images\n');
+    % convolvedFeaturesThis(featureNum, imageNum, imageRow, imageCol)
+    % (400/50)x2000x57x57 in this case, 400/50=8 features each time
     convolvedFeaturesThis = cnnConvolve(patchDim, stepSize, ...
         trainImages, Wt, bt, ZCAWhite, meanPatch);
     pooledFeaturesThis = cnnPool(poolDim, convolvedFeaturesThis);
@@ -189,7 +191,8 @@ end
 
 
 % You might want to save the pooled features since convolution and pooling takes a long time
-save('cnnPooledFeatures.mat', 'pooledFeaturesTrain', 'pooledFeaturesTest');
+%save('cnnPooledFeatures.mat', 'pooledFeaturesTrain', 'pooledFeaturesTest');
+save -v7 cnnPooledFeatures.mat pooledFeaturesTrain pooledFeaturesTest;
 toc();
 
 %%======================================================================
@@ -206,13 +209,21 @@ toc();
 softmaxLambda = 1e-4;
 numClasses = 4;
 % Reshape the pooledFeatures to form an input vector for softmax
+% pooledFeaturesTrain 400x2000x3x3
 softmaxX = permute(pooledFeaturesTrain, [1 3 4 2]);
 softmaxX = reshape(softmaxX, numel(pooledFeaturesTrain) / numTrainImages,...
     numTrainImages);
 softmaxY = trainLabels;
 
-options = struct;
+
+options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
+                          % function. Generally, for minFunc to work, you
+                          % need a function pointer with two outputs: the
+                          % function value and the gradient. In our problem,
+                          % softmaxCost.m satisfies this.
 options.maxIter = 200;
+options.useMex = false;
+options.Display = 'on'; % Level [ off | final | (iter) | full | excessive ]
 softmaxModel = softmaxTrain(numel(pooledFeaturesTrain) / numTrainImages,...
     numClasses, softmaxLambda, softmaxX, softmaxY, options);
 
@@ -226,7 +237,8 @@ softmaxY = testLabels;
 
 [pred] = softmaxPredict(softmaxModel, softmaxX);
 acc = (pred(:) == softmaxY(:));
-acc = sum(acc) / size(acc, 1);
-fprintf('Accuracy: %2.3f%%\n', acc * 100);
+acc = 100 * sum(acc) / size(acc, 1);
+fprintf('Accuracy: %2.3f%%\n', acc);
 
 % You should expect to get an accuracy of around 80% on the test images.
+
