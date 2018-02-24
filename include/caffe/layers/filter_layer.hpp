@@ -14,6 +14,7 @@ namespace caffe {
  *  filter remaining Blobs accordingly with selector data (0 means that
  * the corresponding item has to be filtered, non-zero means that corresponding
  * item needs to stay).
+ * each passing bottom's channel (axis >= 1) data is stacked to be a larger channel
  */
 template <typename Dtype>
 class FilterLayer : public Layer<Dtype> {
