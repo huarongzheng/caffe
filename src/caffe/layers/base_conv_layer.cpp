@@ -132,6 +132,8 @@ void BaseConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   // Handle the parameters: weights and biases.
   // - blobs_[0] holds the filter weights
   // - blobs_[1] holds the biases (optional)
+  // in each weights and biases blob data_ holds the actual coeff while diff_ holds the gradient (Nabla or Del)
+  // in each bottom and top blob data_ holds the actual "feature" value, while diff_ holds the "residual error" (Delta) back propagating to this blob
   vector<int> weight_shape(2);
   weight_shape[0] = conv_out_channels_;
   weight_shape[1] = conv_in_channels_ / group_;
@@ -315,9 +317,9 @@ void BaseConvolutionLayer<Dtype>::weight_cpu_gemm(const Dtype* input,
 
 template <typename Dtype>
 void BaseConvolutionLayer<Dtype>::backward_cpu_bias(Dtype* bias,
-    const Dtype* input) {
+    const Dtype* output) {
   caffe_cpu_gemv<Dtype>(CblasNoTrans, num_output_, out_spatial_dim_, 1.,
-      input, bias_multiplier_.cpu_data(), 1., bias);
+      output, bias_multiplier_.cpu_data(), 1., bias);
 }
 
 #ifndef CPU_ONLY
@@ -384,9 +386,9 @@ void BaseConvolutionLayer<Dtype>::weight_gpu_gemm(const Dtype* input,
 
 template <typename Dtype>
 void BaseConvolutionLayer<Dtype>::backward_gpu_bias(Dtype* bias,
-    const Dtype* input) {
+    const Dtype* output) {
   caffe_gpu_gemv<Dtype>(CblasNoTrans, num_output_, out_spatial_dim_, 1.,
-      input, bias_multiplier_.gpu_data(), 1., bias);
+      output, bias_multiplier_.gpu_data(), 1., bias);
 }
 
 #endif  // !CPU_ONLY

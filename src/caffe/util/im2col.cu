@@ -11,20 +11,24 @@ __global__ void im2col_gpu_kernel(const int n, const Dtype* data_im,
     const int pad_h, const int pad_w,
     const int stride_h, const int stride_w,
     const int dilation_h, const int dilation_w,
-    const int height_col, const int width_col,
+    const int conv_out_height, const int conv_out_width,
     Dtype* data_col) {
+    // for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < (n); i += blockDim.x * gridDim.x)    where  n = conv_in_channels * conv_out_height * conv_out_width
+    // ideally if cuda kernel is large enough (kernel_size=blockDim.x * gridDim.x), so that there's 1 thread to fill each of the n conv patches (each with 2D conv kernel size)
+    // when cuda kernel is not large enough (kernel_size<n). n patches are (almost) evenly distributed to blockDim.x * gridDim.x threads
+    // each index_n of the n patches, will be handled by the index_n % kernel_size thread in cuda kernel
   CUDA_KERNEL_LOOP(index, n) {
-    const int h_index = index / width_col;
-    const int h_col = h_index % height_col;
-    const int w_col = index % width_col;
-    const int c_im = h_index / height_col;
-    const int c_col = c_im * kernel_h * kernel_w;
-    const int h_offset = h_col * stride_h - pad_h;
-    const int w_offset = w_col * stride_w - pad_w;
+    const int h_index = index / conv_out_width;    // h_index: conv_out line index
+    const int h_col = h_index % conv_out_height;   // h_col: 2D vertical   index in output data_col
+    const int w_col = index % conv_out_width;      // w_col: 2D horizontal index in output data_col. (thread) index ele by ele goes through data_col and fill in conv out w->h->c
+    const int c_im = h_index / conv_out_height;    // c_im: channel index for each patch in data_col. index / conv_out_width / conv_out_height
+    const int c_col = c_im * kernel_h * kernel_w;  // c_col: each patch shall have kernel_h * kernel_w rows in data_col, and each is conv_out_height * conv_out_width wide
+    const int h_offset = h_col * stride_h - pad_h; // 2D veritical  start point of the input image to be multiplied by kernel
+    const int w_offset = w_col * stride_w - pad_w; // 2D horizontal start point of the input image to be multiplied by kernel
     Dtype* data_col_ptr = data_col;
-    data_col_ptr += (c_col * height_col + h_col) * width_col + w_col;
+    data_col_ptr += (c_col * conv_out_height + h_col) * conv_out_width + w_col; // = c_col * conv_out_height * conv_out_width + h_col * conv_out_width + w_col
     const Dtype* data_im_ptr = data_im;
-    data_im_ptr += (c_im * height + h_offset) * width + w_offset;
+    data_im_ptr += (c_im * height + h_offset) * width + w_offset; // = c_im * height * width + h_offset * width + w_offset. start pointer to each small patch of 2D input image to be multiplied by kernel
     for (int i = 0; i < kernel_h; ++i) {
       for (int j = 0; j < kernel_w; ++j) {
         int h_im = h_offset + i * dilation_h;
@@ -32,7 +36,7 @@ __global__ void im2col_gpu_kernel(const int n, const Dtype* data_im,
         *data_col_ptr =
             (h_im >= 0 && w_im >= 0 && h_im < height && w_im < width) ?
             data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
-        data_col_ptr += height_col * width_col;
+        data_col_ptr += conv_out_height * conv_out_width; // step 1 row in data_col that's conv_out_width * conv_out_height
       }
     }
   }
